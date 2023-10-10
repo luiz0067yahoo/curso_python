@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agenda</title>
+</head>
+<body>
+    <label>Nome</label>: <input id="nome"><br>
+    <label>Telefone</label>: <input id="telefone"><br>
+    <button onclick="salvar()">Salvar</button>
+    <button onclick="limpar()">Limpar</button>
+    <table>
+        <thead>
+            <tr>
+                <th>Codigo</td>
+                <th>Nome</td>
+                <th>Telefone</th>
+                <th>Acao</td>
+            </tr>
+        <thead>
+        <tbody id="resultTable">
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+        </tbody>
+    </table>
+
+</body>
+<script>
+    var id=null;
+    var nome="";
+    var telefone="";
+    var resultado=document.getElementById("resultado");
+    var baseUrl="http://localhost:5000/contatos";
+   
+    function limpar(){
+        id=null;
+        nome="";
+        telefone="";
+        document.getElementById("nome").value="";
+        document.getElementById("telefone").value="";
+    }
+
+    function rest(url, data, method, callBack) {
+            // Configuração do objeto de opções para a requisição fetch
+            var options = {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json' // Indica que estamos enviando dados em JSON
+                }
+            };
+
+            // Se o método não é GET, adicione os dados ao corpo da requisição
+            if (method !== 'GET') {
+                options.body = JSON.stringify(data); // Converte o objeto de dados para JSON
+            }
+
+            // Realiza a requisição usando fetch
+            fetch(url, options)
+                .then(function(response) {
+                    if (response.ok) {
+                        // Se a resposta é um JSON, use response.json()
+                        // Se for uma resposta de texto, use response.text()
+                        return response.json(); // ou response.text() se for texto
+                    }
+                    throw new Error('Erro ao obter os dados');
+                })
+                .then(function(data) {
+                    // Chama a função de retorno de chamada com os dados da resposta
+                    callBack(data);
+                })
+                .catch(function(error) {
+                    // Trata erros aqui
+                    console.error('Erro:', error);
+                });
+        }
+
+    function salvar(){
+        nome=document.getElementById("nome").value;
+        telefone=document.getElementById("telefone").value;
+        if(id==null){
+            criar();
+        }
+        else{
+            alterar();
+        }
+    }
+
+    function criar(){
+        var data={
+            "nome":nome,
+            "telefone":telefone
+        }
+        rest(baseUrl, data, "POST", processo);
+    }
+
+    function alterar(){
+        var data={
+            "id":id,
+            "nome":nome,
+            "telefone":telefone
+        }
+        rest(baseUrl, data, "PUT", processo);
+    }
+    
+    function excluir(){        
+        rest(baseUrl+`/${id}`, {}, "DELETE", processo);
+        id=null;
+    }
+    // Função para atualizar a tabela com dados
+    function atualizaTabela(dados) {
+        var tbody = document.getElementById('resultTable'); // Obtém o corpo da tabela
+
+        // Limpa o conteúdo atual da tabela
+        tbody.innerHTML = '';
+
+        // Itera sobre a lista de dados e preenche as linhas da tabela
+        dados.forEach(function(item) {
+            // Cria uma nova linha da tabela
+            var row = document.createElement('tr');
+
+            // Cria células para código, nome, telefone e ação
+            var codigoCell = document.createElement('td');
+            var nomeCell = document.createElement('td');
+            var telefoneCell = document.createElement('td');
+            var acaoCell = document.createElement('td');
+
+            // Preenche as células com os dados do item atual
+            codigoCell.textContent = item.id; // Supondo que 'id' seja o campo do código
+            nomeCell.textContent = item.nome; // Supondo que 'nome' seja o campo do nome
+            telefoneCell.textContent = item.telefone; // Supondo que 'telefone' seja o campo do telefone
+
+            // Adiciona botão de ação (por exemplo, um botão de excluir)
+            var botaoExcluir = document.createElement('button');
+            botaoExcluir.textContent = 'Excluir';
+            botaoExcluir.addEventListener('click', function() {
+                var confirmacao = confirm("Você tem certeza que deseja Excluir o contato "+item.nome+" ?");
+                if (confirmacao) {
+                    id=item.id;
+                    excluir();
+                }
+            });
+            var botaoEditar = document.createElement('button');
+            botaoEditar.textContent = 'Editar';
+            botaoEditar.addEventListener('click', function() {
+                id=item.id;
+                nome=item.nome;
+                telefone=item.telefone;
+                document.getElementById("nome").value=item.nome;
+                document.getElementById("telefone").value=item.telefone;
+            });
+            acaoCell.appendChild(botaoEditar);
+            acaoCell.appendChild(botaoExcluir);
+
+            // Adiciona as células à linha
+            row.appendChild(codigoCell);
+            row.appendChild(nomeCell);
+            row.appendChild(telefoneCell);
+            row.appendChild(acaoCell);
+            // Adiciona a linha ao corpo da tabela
+            tbody.appendChild(row);
+        });
+    }
+
+    // Exemplo de uso da função
+    
+
+    // Chama a função atualizaTabela com a lista de dados
+    function processo(dado){
+        rest(baseUrl, {}, "GET", atualizaTabela);
+    }
+    processo([]);
+</script>
+</html>

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora</title>
+</head>
+<body>
+    <label>valor1</label>: <input id="v1"><br>
+    <label>valor2</label>: <input id="v2"><br>
+    <button>+</button>
+    <button>-</button>
+    <button>*</button>
+    <button>/</button>
+    <br>
+    <br>
+    Resultado: <label id="resultado"></label>
+</body>
+<script>
+
+    var v1;
+    var v2;
+    var resultado=document.getElementById("resultado");
+
+    document.body.addEventListener("click",function(event){
+        var elementoClicado = event.target;
+        if(elementoClicado.tagName=="BUTTON"){
+            v1=document.getElementById("v1").value;
+            v2=document.getElementById("v2").value;
+            if(elementoClicado.innerHTML=="+"){
+                soma()
+            }
+            else if(elementoClicado.innerHTML=="-"){
+                substracao();
+            }
+            else if(elementoClicado.innerHTML=="/"){
+                divisao();
+            }
+            else if(elementoClicado.innerHTML=="*"){
+                multiplicacao();
+            }
+
+        }
+    });
+
+    function soma(){
+        var url="http://localhost:5000/soma?v1="+v1+"&v2="+v2;
+                fetch(url)
+                .then(function (response) {
+                    // Verifica se a requisição foi bem-sucedida
+                        if (response.ok) {
+                            // Se a resposta é um JSON, use response.json()
+                            // Se for uma resposta de texto, use response.text()
+                            return response.text(); // ou response.text() se for texto
+                        }
+                        // Se a resposta não for bem-sucedida, rejeite a Promise com uma mensagem de erro
+                        throw new Error('Erro ao obter os dados');
+                })
+                .then(function (data) {
+                    // O resultado da resposta está disponível aqui
+                    resultado.innerHTML = data; // ou use data para texto
+                })
+                .catch(function (error) {
+                    // Trata erros aqui
+                    console.error('Erro:', error);
+                });
+    }
+    function substracao(){
+        var url="http://localhost:5000/subtracao";
+        var data = {
+            v1: v1,
+            v2: v2
+        };
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json' // Indica que estamos enviando dados em JSON
+            },
+            body: JSON.stringify(data) // Converte o objeto de dados para JSON
+        })
+                    .then(function (response) {
+                    // Verifica se a requisição foi bem-sucedida
+                    if (response.ok) {
+                        // Se a resposta é um JSON, use response.json()
+                        // Se for uma resposta de texto, use response.text()
+                        return response.text(); // ou response.text() se for texto
+                    }
+                    // Se a resposta não for bem-sucedida, rejeite a Promise com uma mensagem de erro
+                    throw new Error('Erro ao obter os dados');
+                })
+                .then(function (data) {
+                    // O resultado da resposta está disponível aqui
+                    resultado.innerHTML = data; // ou use data para texto
+                })
+                .catch(function (error) {
+                    // Trata erros aqui
+                    console.error('Erro:', error);
+                });
+    }
+    function divisao(){
+        var url="http://localhost:5000/divisao";
+        var data = {
+            v1: v1,
+            v2: v2
+        };
+        fetch(url, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json' // Indica que estamos enviando dados em JSON
+            },
+            body: JSON.stringify(data) // Converte o objeto de dados para JSON
+        })
+                    .then(function (response) {
+                    // Verifica se a requisição foi bem-sucedida
+                    if (response.ok) {
+                        // Se a resposta é um JSON, use response.json()
+                        // Se for uma resposta de texto, use response.text()
+                        return response.text(); // ou response.text() se for texto
+                    }
+                    // Se a resposta não for bem-sucedida, rejeite a Promise com uma mensagem de erro
+                    throw new Error('Erro ao obter os dados');
+                })
+                .then(function (data) {
+                    // O resultado da resposta está disponível aqui
+                    resultado.innerHTML = data; // ou use data para texto
+                })
+                .catch(function (error) {
+                    // Trata erros aqui
+                    console.error('Erro:', error);
+                });
+    }
+
+    function multiplicacao(){
+        var url=`http://localhost:5000/multiplicacao/${v1}/${v2}`;
+        var data = {
+            v1: v1,
+            v2: v2
+        };
+        fetch(url, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json' // Indica que estamos enviando dados em JSON
+            },
+            body: JSON.stringify(data) // Converte o objeto de dados para JSON
+        })
+                    .then(function (response) {
+                    // Verifica se a requisição foi bem-sucedida
+                    if (response.ok) {
+                        // Se a resposta é um JSON, use response.json()
+                        // Se for uma resposta de texto, use response.text()
+                        return response.text(); // ou response.text() se for texto
+                    }
+                    // Se a resposta não for bem-sucedida, rejeite a Promise com uma mensagem de erro
+                    throw new Error('Erro ao obter os dados');
+                })
+                .then(function (data) {
+                    // O resultado da resposta está disponível aqui
+                    resultado.innerHTML = data; // ou use data para texto
+                })
+                .catch(function (error) {
+                    // Trata erros aqui
+                    console.error('Erro:', error);
+                });
+    }
+</script>
+</html>
