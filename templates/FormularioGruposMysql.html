@@ -3,35 +3,18 @@
 <head><!-- começa o cabecalho -->
     <meta charset="UTF-8"><!-- define o formato de caracteres -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.9.0/css/all.min.css" integrity="sha512-q3eWabyZPc1XTCmF+8/LuE1ozpg5xxn7iO89yfSOd5/oKvyqLngoNGsx8jq92Y8eXJ/IRxQbEC+FGSYxtk2oiw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <title>Agenda Mysql</title><!--titulo da pagina-->
 </head><!--fim do cabeçalho-->
 <body><!-- começa o corpo -->
-    <div class="mx-auto my-4 col-6 ">
-        <label class="form-label">Nome</label><!-- rotulo do escrita -->
-        <input class="form-control"  id="nome"><!-- caixa de texto --><br><!-- pular de linha-->
-        <label class="form-label">Telefone</label>
-        <input class="form-control" id="telefone"><br>
-        <label class="form-label">Grupo</label>
-
-        <div class="input-group mb-3">
-            <select class="form-control"  id="id_grupo">
-            </select>
-            <a href="/formulario_grupo" target="_blank" class="input-group-text" id="basic-addon1"><i class="fas fa-search"></i></a>
-        </div>
-        
-        <button type="button" class="btn btn-success" onclick="salvar()"><i class="fas fa-cloud-upload-alt"></i> Salvar</button><!-- botão -->
-        <button type="button" class="btn btn-danger" onclick="limpar()"><i class="fas fa-eraser"></i> Limpar</button>
-    </div>
-    <table class="table table-striped my-4  "><!-- tabela -->
+    <label>Nome</label><!-- rotulo do escrita -->: <input id="nome"><!-- caixa de texto --><br><!-- pular de linha-->
+    <button onclick="salvar()">Salvar</button><!-- botão -->
+    <button onclick="limpar()">Limpar</button>
+    <table><!-- tabela -->
         <thead><!-- cabeçalho -->
             <tr><!-- linha -->
-                <th scope="col">Codigo</th><!-- celula de cabeçalho -->
-                <th scope="col">Nome</th>
-                <th scope="col">Telefone</th>
-                <th scope="col">Grupo</th>
-                <th scope="col">Acao</th>
+                <th>Codigo</th><!-- celula de cabeçalho -->
+                <th>Nome</th>
+                <th>Acao</th>
             </tr>
         <thead>
         <tbody id="resultTable"><!-- corpo da tabela -->
@@ -39,32 +22,25 @@
                 <td></td><!-- celula do corpo -->
                 <td></td>
                 <td></td>
-                <td></td>
             </tr>
         </tbody>
     </table>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.9.0/js/all.min.js" integrity="sha512-LW9+kKj/cBGHqnI4ok24dUWNR/e8sUD8RLzak1mNw5Ja2JYCmTXJTF5VpgFSw+VoBfpMvPScCo2DnKTIUjrzYw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
 </body>
 <script>
     /*comentario em javascript*/
     //cometario
     var id=null;//inicia vazio
-    var id_grupo=null;
     var nome="";//inicia vazio
-    var telefone="";//inicia vazio
     var resultado=document.getElementById("resultado");
     //resultado é a tag Tbody
-    var baseUrl="http://localhost:5000/contatos";
+    var baseUrl="http://localhost:5000/grupos";
     //o link do nosso backend
 
     function limpar(){
         id=null;
-        id_grupo=null;
         nome="";
-        telefone="";
         document.getElementById("nome").value="";
-        document.getElementById("telefone").value="";
     }
 
     //função de comunicação com o backend
@@ -109,12 +85,8 @@
         }
 
     function salvar(){
-        id_grupo=document.getElementById("id_grupo").value;
-        //captura o id_grupo da caixa de selecao
         nome=document.getElementById("nome").value;
         //captura o nome da caixa de texto
-        telefone=document.getElementById("telefone").value;
-        //captura o telefone da caixa de texto
         if(id==null){//se o id esta vazio
             criar();
         }
@@ -125,18 +97,14 @@
 
     function criar(){
         var data={
-            "id_grupo":id_grupo,
             "nome":nome,
-            "telefone":telefone
         }
         rest(baseUrl, data, "POST", processo);
     }
 
     function alterar(){
         var data={
-            "id_grupo":id_grupo,
             "nome":nome,
-            "telefone":telefone
         }
         rest(baseUrl+`/${id}`, data, "PUT", processo);
     }
@@ -145,22 +113,13 @@
         rest(baseUrl+`/${id}`, {}, "DELETE", processo);
         id=null;
     }
-    // Função para atualizar a tabela com dados
-    function atualizaCaixadeSelecao(dados) {
-        var select = document.getElementById('id_grupo');//Obtém o corpo da tabela
-        select.innerHTML = '';
-        dados.forEach(function(item) {
-            var option = document.createElement('option');
-            option.value = item.id; // Supondo que 'id' seja o campo do código
-            option.textContent = item.nome; // Supondo que 'nome' seja o campo do nome
-            select.appendChild(option);
-        });
-    }
+    
 
     // Função para atualizar a tabela com dados
     function atualizaTabela(dados) {
         limpar();
         var tbody = document.getElementById('resultTable'); // Obtém o corpo da tabela
+
         // Limpa o conteúdo atual da tabela
         tbody.innerHTML = '';
 
@@ -170,52 +129,42 @@
             var row = document.createElement('tr');
 
             // Cria células para código, nome, telefone e ação
-            var codigoCell = document.createElement('th');
-            codigoCell.scope="row";
+            var codigoCell = document.createElement('td');
             var nomeCell = document.createElement('td');
-            var telefoneCell = document.createElement('td');
-            var grupoCell = document.createElement('td');
             var acaoCell = document.createElement('td');
 
             // Preenche as células com os dados do item atual
             codigoCell.textContent = item.id; // Supondo que 'id' seja o campo do código
             nomeCell.textContent = item.nome; // Supondo que 'nome' seja o campo do nome
-            telefoneCell.textContent = item.telefone; // Supondo que 'telefone' seja o campo do telefone
-            grupoCell.textContent = item.grupo; // Supondo que 'telefone' seja o campo do telefone
 
             // Adiciona botão de ação (por exemplo, um botão de excluir)
-            var botaoExcluir = document.createElement('button');
-            botaoExcluir.type='button';
-            botaoExcluir.className='btn btn-dark ms-2';
-            botaoExcluir.innerHTML='<i class="fas fa-trash"></i>';
-            botaoExcluir.addEventListener('click', function() {
-                var confirmacao = confirm("Você tem certeza que deseja Excluir o contato "+item.nome+" ?");
-                if (confirmacao) {
-                    id=item.id;
-                    excluir();
-                }
-            });
-
+            var botaoExcluir
+            if(item.filhos==0){
+                botaoExcluir = document.createElement('button');
+                botaoExcluir.textContent = 'Excluir';
+                botaoExcluir.addEventListener('click', function() {
+                    var confirmacao = confirm("Você tem certeza que deseja Excluir o contato "+item.nome+" ?");
+                    if (confirmacao) {
+                        id=item.id;
+                        excluir();
+                    }
+                });
+            }
             var botaoEditar = document.createElement('button');
-            botaoEditar.type='button';
-            botaoEditar.className='btn btn-primary';
-            botaoEditar.innerHTML = '<i class="fas fa-pencil-alt"></i>';
+            botaoEditar.textContent = 'Editar';
             botaoEditar.addEventListener('click', function() {
                 id=item.id;
-                id_grupo=item.id_grupo;
                 nome=item.nome;
-                telefone=item.telefone;
                 document.getElementById("nome").value=item.nome;
-                document.getElementById("telefone").value=item.telefone;
             });
             acaoCell.appendChild(botaoEditar);
-            acaoCell.appendChild(botaoExcluir);
+            if(item.filhos==0){
+                acaoCell.appendChild(botaoExcluir);
+            }
 
             // Adiciona as células à linha
             row.appendChild(codigoCell);
             row.appendChild(nomeCell);
-            row.appendChild(telefoneCell);
-            row.appendChild(grupoCell);
             row.appendChild(acaoCell);
             // Adiciona a linha ao corpo da tabela
             tbody.appendChild(row);
